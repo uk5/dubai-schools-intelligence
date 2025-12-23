@@ -12,16 +12,28 @@ class SchoolAgent:
         """Initialize the RAG agent with both Gemini and Ollama support."""
         self.df = pd.read_excel(data_path)
         
-        # Configure Gemini
-        # Try Streamlit secrets first (cloud), then .env (local)
+        # Try to get API key from Streamlit secrets first (for cloud), then from .env (for local)
+        api_key = None
+        
+        # First try Streamlit secrets (cloud deployment)
         try:
             import streamlit as st
-            api_key = st.secrets["GEMINI_API_KEY"]
-        except:
+            if hasattr(st, 'secrets'):
+                api_key = st.secrets.get("GEMINI_API_KEY")
+        except Exception as e:
+            pass
+        
+        # Fallback to environment variables (local development)
+        if not api_key:
             api_key = os.getenv("GEMINI_API_KEY")
         
-        genai.configure(api_key=api_key)
-        self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+        # Configure Gemini with the API key
+        if api_key:
+            genai.configure(api_key=api_key)
+            self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+        else:
+            self.gemini_model = None
+            print("⚠️ Warning: Gemini API key not found. AI chat will not work.")
         
     def search_schools(self, query, filters=None):
         """
