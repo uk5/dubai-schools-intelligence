@@ -217,10 +217,24 @@ with col2:
                 st.markdown(prompt)
 
             with st.chat_message("assistant"):
-                # Use filtered data as context for the agent
-                response = st.session_state.agent.ask(prompt, context_df=filtered_df.head(20))
-                st.markdown(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
+                try:
+                    # Show thinking indicator
+                    with st.spinner("🤔 Thinking..."):
+                        # Use filtered data as context for the agent
+                        response = st.session_state.agent.ask(prompt, context_df=filtered_df.head(20))
+                    
+                    if response:
+                        st.markdown(response)
+                        st.session_state.messages.append({"role": "assistant", "content": response})
+                    else:
+                        error_msg = "⚠️ No response generated. Check API keys in Streamlit Cloud Secrets."
+                        st.error(error_msg)
+                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                        
+                except Exception as e:
+                    error_msg = f"❌ Error: {str(e)}\n\nPlease check that GEMINI_API_KEY is configured in Streamlit Cloud Secrets."
+                    st.error(error_msg)
+                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
 
 # Stats (Final positions)
 st.sidebar.markdown("---")
