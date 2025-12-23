@@ -77,27 +77,19 @@ class SchoolAgent:
         # Try Gemini first if available
         if self.gemini_model:
             try:
+                print(f"[DEBUG] Attempting Gemini API call...")
                 response = self.gemini_model.generate_content(system_prompt + "\nUser Question: " + user_query)
+                print(f"[DEBUG] Gemini response received!")
                 return response.text
             except Exception as e:
                 import traceback
-                print(f"Gemini error: {e}")
-                traceback.print_exc()
-                print("Falling back to Ollama...")
-        
-        # Fallback to Ollama
-        try:
-            # Using the user's latest llama3.1 if available, else latest
-            response = ollama.chat(model='llama3.1:8b', messages=[
-                {'role': 'system', 'content': system_prompt},
-                {'role': 'user', 'content': user_query},
-            ])
-            return response['message']['content']
-        except Exception as e:
-            import traceback
-            print(f"Ollama error: {e}")
-            traceback.print_exc()
-            return f"Error: Could not connect to AI. Please check that GEMINI_API_KEY is configured in Streamlit Cloud Secrets, or that Ollama is running locally."
+                error_details = traceback.format_exc()
+                print(f"[ERROR] Gemini API failed: {e}")
+                print(f"[ERROR] Full traceback: {error_details}")
+                # Return the error so user can see what's wrong
+                return f"⚠️ Gemini API Error: {str(e)}\n\nThis usually means the API key is invalid or there's a connectivity issue. Please double-check the GEMINI_API_KEY in Streamlit Cloud Secrets."
+        else:
+            return "⚠️ Gemini model not initialized. Please check that GEMINI_API_KEY is configured in Streamlit Cloud Secrets."
 
 # Sample usage logic for testing
 if __name__ == "__main__":
