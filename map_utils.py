@@ -187,18 +187,33 @@ def get_isochrone(lat, lon, minutes=15, travel_mode="driving"):
     Calculates drive-time catchment using TravelTime API.
     """
     # Try to get API keys from Streamlit secrets first (for cloud), then from .env (for local)
-    try:
-        app_id = st.secrets["TRAVELTIME_APP_ID"]
-        api_key = st.secrets["TRAVELTIME_API_KEY"]
-    except:
+    app_id = None
+    api_key = None
+    
+    # First try Streamlit secrets (cloud deployment)
+    if hasattr(st, 'secrets'):
+        try:
+            app_id = st.secrets.get("TRAVELTIME_APP_ID")
+            api_key = st.secrets.get("TRAVELTIME_API_KEY")
+        except Exception as e:
+            pass
+    
+    # Fallback to environment variables (local development)
+    if not app_id:
         app_id = os.getenv("TRAVELTIME_APP_ID")
+    if not api_key:
         api_key = os.getenv("TRAVELTIME_API_KEY")
+    
+    # If still no keys, show helpful error
+    if not app_id or not api_key:
+        st.error("⚠️ TravelTime API keys not configured. Add them in Streamlit Cloud Secrets.")
+        return None
     
     # Use the correct endpoint: time-map instead of isochrones
     url = "https://api.traveltimeapp.com/v4/time-map"
     headers = {
-        "X-Application-Id": app_id,
-        "X-Api-Key": api_key,
+        "X-Application-Id": str(app_id),
+        "X-Api-Key": str(api_key),
         "Content-Type": "application/json"
     }
     
