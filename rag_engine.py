@@ -74,7 +74,8 @@ class SchoolAgent:
         Always be helpful, professional, and guide the user based on the context ratings, fees, and location.
         """
         
-        if self.model_type == "gemini":
+        # Try Gemini first if available
+        if self.gemini_model:
             try:
                 response = self.gemini_model.generate_content(system_prompt + "\nUser Question: " + user_query)
                 return response.text
@@ -83,21 +84,20 @@ class SchoolAgent:
                 print(f"Gemini error: {e}")
                 traceback.print_exc()
                 print("Falling back to Ollama...")
-                self.model_type = "ollama"
         
-        if self.model_type == "ollama":
-            try:
-                # Using the user's latest llama3.1 if available, else latest
-                response = ollama.chat(model='llama3.1:8b', messages=[
-                    {'role': 'system', 'content': system_prompt},
-                    {'role': 'user', 'content': user_query},
-                ])
-                return response['message']['content']
-            except Exception as e:
-                import traceback
-                print(f"Ollama error: {e}")
-                traceback.print_exc()
-                return f"Error with AI providers: {e}. Please ensure Ollama is running and Llama 3.1 is installed."
+        # Fallback to Ollama
+        try:
+            # Using the user's latest llama3.1 if available, else latest
+            response = ollama.chat(model='llama3.1:8b', messages=[
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': user_query},
+            ])
+            return response['message']['content']
+        except Exception as e:
+            import traceback
+            print(f"Ollama error: {e}")
+            traceback.print_exc()
+            return f"Error: Could not connect to AI. Please check that GEMINI_API_KEY is configured in Streamlit Cloud Secrets, or that Ollama is running locally."
 
 # Sample usage logic for testing
 if __name__ == "__main__":
