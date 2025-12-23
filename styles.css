@@ -1,0 +1,51 @@
+/* Premium Dubai Schools App Styles */
+
+:root {
+    --primary-color: #ff4500;
+    --background-dark: #0e1117;
+    --glass-background: rgba(255, 255, 255, 0.05);
+}
+
+.stApp {
+    background-color: var(--background-dark);
+    color: #ffffff;
+}
+
+/* Ensure all text in chat, inputs, and metrics is high-contrast */
+.stMarkdown,
+.stText,
+p,
+span,
+h1,
+h2,
+h3,
+label {
+    color: #ffffff !important;
+}
+
+/* Glassmorphism sidebar */
+section[data-testid="stSidebar"] {
+    background: var(--glass-background);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Chat message bubbles - force white text */
+[data-testid="stChatMessage"] p {
+    color: #ffffff !important;
+}
+
+[data-testid="stChatMessage"] {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+/* Metrics and filters */
+[data-testid="metric-container"] {
+    background: var(--glass-background);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
