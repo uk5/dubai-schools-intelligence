@@ -18,8 +18,9 @@ with open("styles.css") as f:
 # Data Initialization
 @st.cache_data
 def load_data():
-    master_path = r"F:\kaustubh_workings\Vision_2025\schools\dxb_schools_v0.1.xlsx"
-    pops_path = r"F:\kaustubh_workings\Vision_2025\schools\dxb_pops_v0.1.xlsx"
+    # Use relative paths that work on all platforms
+    master_path = "data/dxb_schools_v0.1.xlsx"
+    pops_path = "data/dxb_pops_v0.1.xlsx"
     
     # Load Master Data
     df = pd.read_excel(master_path)
@@ -35,7 +36,7 @@ df, df_zones = load_data()
 
 # Agent Initialization
 if "agent" not in st.session_state:
-    st.session_state.agent = SchoolAgent(r"F:\kaustubh_workings\Vision_2025\schools\dxb_schools_v0.1.xlsx")
+    st.session_state.agent = SchoolAgent("data/dxb_schools_v0.1.xlsx")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
