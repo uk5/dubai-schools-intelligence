@@ -30,7 +30,7 @@ class SchoolAgent:
         # Configure Gemini with the API key
         if api_key:
             genai.configure(api_key=api_key)
-            self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+            self.gemini_model = genai.GenerativeModel('gemini-pro')
         else:
             self.gemini_model = None
             print("⚠️ Warning: Gemini API key not found. AI chat will not work.")
