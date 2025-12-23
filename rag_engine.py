@@ -8,12 +8,19 @@ import ollama
 load_dotenv()
 
 class SchoolAgent:
-    def __init__(self, data_path, model_type="gemini"):
+    def __init__(self, data_path):
+        """Initialize the RAG agent with both Gemini and Ollama support."""
         self.df = pd.read_excel(data_path)
-        self.model_type = model_type
         
         # Configure Gemini
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        # Try Streamlit secrets first (cloud), then .env (local)
+        try:
+            import streamlit as st
+            api_key = st.secrets["GEMINI_API_KEY"]
+        except:
+            api_key = os.getenv("GEMINI_API_KEY")
+        
+        genai.configure(api_key=api_key)
         self.gemini_model = genai.GenerativeModel('gemini-1.5-pro')
         
     def search_schools(self, query, filters=None):
